@@ -25,6 +25,7 @@ import product.model
 from github.release_notes.util import (
     fetch_release_notes,
     post_to_slack,
+    delete_file_from_slack,
     github_repo_path,
     draft_release_name_for_version,
 )
@@ -533,7 +534,14 @@ class PostSlackReleaseStep(TransactionalStep):
             return {'uploaded file id': uploaded_file_id}
 
     def revert(self):
-        raise NotImplementedError('revert-method is not yet implemented')
+        if not self.context().has_output(self.name()):
+            # Posting the release notes was unsuccessful, nothing to revert
+            return
+        uploaded_file_id = self.context().step_output(self.name()).get('uploaded file id')
+        delete_file_from_slack(
+            slack_cfg_name=self.slack_cfg_name,
+            file_id = uploaded_file_id,
+        )
 
 
 def release_and_prepare_next_dev_cycle(
