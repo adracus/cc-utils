@@ -72,11 +72,12 @@ def post_to_slack(
     title = '[{n}] {v} released'.format(n=github_repository_name, v=release_version)
     slack_cfg = ctx().cfg_factory().slack(slack_cfg_name)
     try:
-        SlackHelper(slack_cfg).post_to_slack(
+        response = SlackHelper(slack_cfg).post_to_slack(
             channel=slack_channel,
             title=title,
             message=release_notes_md_links
         )
+        return response
     except RuntimeError as e:
         warning(e)
 
