@@ -518,13 +518,16 @@ class PostSlackReleaseStep(TransactionalStep):
 
     def apply(self):
         release_notes = self.context().step_output('Publish Release Notes').get('release notes')
-        post_to_slack(
+        result = post_to_slack(
             release_notes=release_notes,
             github_repository_name=self.githubrepobranch.github_repo_path(),
             slack_cfg_name=self.slack_cfg_name,
             slack_channel=self.slack_channel,
             release_version=self.release_version,
         )
+        if result and 'file' in result.keys:
+            uploaded_file_id = result['file']['id']
+            return {'uploaded file id': uploaded_file_id}
 
     def revert(self):
         raise NotImplementedError('revert-method is not yet implemented')
