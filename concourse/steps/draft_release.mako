@@ -63,12 +63,9 @@ release_notes_md = ReleaseNotes.create(
 draft_name = draft_release_name_for_version(processed_version)
 draft_release = helper.draft_release_with_name(draft_name)
 if not draft_release:
-    helper.create_release(
-        tag_name='',
+    helper.create_draft_release(
         name=draft_name,
         body=release_notes_md,
-        draft=True,
-        prerelease=False
     )
 else:
     if not draft_release.body == release_notes_md:
