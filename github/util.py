@@ -373,6 +373,18 @@ class GitHubRepositoryHelper(RepositoryHelperBase):
         )
         return release
 
+    def create_draft_release(
+        self,
+        name: str,
+        body: str,
+    ):
+        return self.create_release(
+            tag_name='',
+            name=name,
+            body=body,
+            draft=True,
+        )
+
     def update_release_notes(
         self,
         tag_name: str,
