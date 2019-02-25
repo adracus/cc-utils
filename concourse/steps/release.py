@@ -423,7 +423,35 @@ class PrepareDevCycleStep(TransactionalStep):
         )
 
     def revert(self):
-        raise NotImplementedError('revert-method is not yet implemented')
+        # Fetch the current version in the repository
+        current_version = self.github_helper.retrieve_file_contents(
+            file_path=self.repository_version_file_path,
+        )
+        # First, check if the version is still set to the previous pre-release version
+        prerelease_version = version.process_version(
+            version_str=self.release_version,
+            operation='set_prerelease',
+            prerelease=self.prerelease_suffix,
+        )
+        if current_version == prerelease_version:
+            # Noting happened, we're done
+            return
+
+        # Safety-check: We expect the version file to contain the next dev cycle version
+        dev_cycle_version = self._calculate_next_cycle_dev_version(
+            release_version=self.release_version,
+            version_operation=self.version_operation,
+            prerelease_suffix=self.prerelease_suffix,
+        )
+        if current_version != dev_cycle_version:
+            raise RuntimeError(f'Unexpected version found in versionfile: {current_version}')
+
+        # Undo commit creating the version upgrade
+        self.github_helper.create_or_update_file(
+            file_path=self.repository_version_file_path,
+            file_contents=prerelease_version,
+            commit_message=f'Revert version file to {prerelease_version}'
+        )
 
 
 class PublishReleaseNotesStep(TransactionalStep):
