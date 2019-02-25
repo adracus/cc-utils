@@ -5,6 +5,8 @@ import semver
 import subprocess
 import traceback
 
+from github3.exceptions import NotFoundError
+
 from util import (
     ctx,
     existing_file,
@@ -352,8 +354,6 @@ class GitHubReleaseStep(TransactionalStep):
                     asset=component_descriptor_contents,
                     label=product.model.COMPONENT_DESCRIPTOR_ASSET_NAME,
                 )
-
-        return {}
 
     def revert(self):
         raise NotImplementedError('revert-method is not yet implemented')
