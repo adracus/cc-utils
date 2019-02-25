@@ -356,7 +356,14 @@ class GitHubReleaseStep(TransactionalStep):
                 )
 
     def revert(self):
-        raise NotImplementedError('revert-method is not yet implemented')
+        # Fetch release
+        try:
+            release = self.github_helper.release_from_tag(self.release_version)
+        except NotFoundError:
+            # release was not created, nothing to do
+            return
+        # delete release
+            release.delete()
 
 
 class PrepareDevCycleStep(TransactionalStep):
