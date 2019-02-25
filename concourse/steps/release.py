@@ -502,10 +502,8 @@ class CleanupDraftReleaseStep(TransactionalStep):
 
         # store output data possible later revert
         output = {
-            'release data':{
-                'name': draft_release.name,
-                'body': draft_release.body,
-            },
+            'release name': draft_release.name,
+            'release body': draft_release.body,
         }
 
         if draft_release:
@@ -518,11 +516,11 @@ class CleanupDraftReleaseStep(TransactionalStep):
         if not self.context().has_output(self.name()):
             # Deleting the draft release was unsuccessful, nothing to do
             return
-        release_data = self.context().step_output(self.name()).get('release data')
+        release_data = self.context().step_output(self.name())
         # create draft release
         self.github_helper.create_draft_release(
-            name=release_data['name'],
-            body=release_data['body'],
+            name=release_data['release name'],
+            body=release_data['release body'],
         )
 
 
