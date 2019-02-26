@@ -297,7 +297,12 @@ class ReleaseTagStep(TransactionalStep):
         )
 
     def revert(self):
-        raise NotImplementedError('revert-method is not yet implemented')
+        try:
+            ref = self.github_helper.ref(f"tags/{self.release_version}")
+        except NotFoundError:
+            # Ref wasn't created
+            return
+        ref.delete()
 
 
 class GitHubReleaseStep(TransactionalStep):
