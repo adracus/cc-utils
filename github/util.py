@@ -53,12 +53,15 @@ class GitHubRepoBranch(object):
         github_config: GithubConfig,
         repo_owner: str,
         repo_name: str,
-        branch: str,
+        branch: str = None,
     ):
         self._github_config = util.not_none(github_config)
         self._repo_owner = util.not_empty(repo_owner)
         self._repo_name = util.not_empty(repo_name)
-        self._branch = util.not_empty(branch)
+        if branch:
+            self._branch = util.not_empty(branch)
+        else:
+            self._branch = None
 
     def github_repo_path(self):
         return f'{self._repo_owner}/{self._repo_name}'
